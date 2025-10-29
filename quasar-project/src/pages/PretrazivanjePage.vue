@@ -2,12 +2,37 @@
   
 
   <div class="q-pa-md">
-    <q-input filled v-model="text" class="q-mb-md" style="max-width: 500px;">
-      <template v-slot:append>
-        <q-icon v-if="text === ''" name="search" />
-        <q-icon v-else name="clear" class="cursor-pointer" @click="text = ''" />
-      </template>
-    </q-input>
+    <q-form
+      @submit="onSubmit"
+      @reset="onReset"
+      class="q-gutter-md q-mb-md"
+      autocorrect="off"
+      autocapitalize="off"
+      autocomplete="off"
+      spellcheck="false"
+    >
+      <q-input filled v-model="text" style="max-width: 500px;">
+        <template v-slot:append>
+          <q-icon v-if="text === ''" name="search" />
+          <q-icon v-else name="clear" class="cursor-pointer" @click="text = ''" />
+        </template>
+      </q-input>
+
+      <div>
+        <q-btn-toggle
+          v-model="model"
+          toggle-color="primary"
+          :options="[
+            {label: 'Naslov', value: 'naslov'},
+            {label: 'Autor', value: 'autor'},
+          ]"
+          class="q-mr-md"
+        />
+        <q-btn label="Pretraži" type="submit" color="primary"/>
+      </div>
+      
+
+    </q-form>
 
     <q-table
       class="my-sticky-header-table"
@@ -32,6 +57,7 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar'
 import { ref, computed } from 'vue'
 
 
@@ -87,6 +113,8 @@ const rows = [
 
 export default {
   setup () {
+    const $q = useQuasar()
+
     const pagination = ref({
       sortBy: 'desc',
       descending: false,
@@ -100,6 +128,16 @@ export default {
       columns,
       rows,
       text: ref(''),
+      model: ref(null),
+
+      onSubmit () {
+        $q.notify({
+          color: 'green-4',
+          textColor: 'white',
+          icon: 'cloud_done',
+          message: 'Submitted'
+        })
+      },
 
       pagesNumber: computed(() => Math.ceil(rows.length / pagination.value.rowsPerPage))
     }
